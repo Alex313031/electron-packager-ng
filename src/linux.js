@@ -5,7 +5,7 @@ const common = require('./common')
 
 class LinuxApp extends App {
   get originalElectronName () {
-    return 'electron'
+    return 'electron-v12.2.3-linux-x64'
   }
 
   get newElectronName () {

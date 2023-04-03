@@ -1,0 +1,82 @@
+step-env: &step-env
+  run:
+    # prevent Wine popup dialogs about installing additional packages
+    name: Setup Environment Variables
+    command: |
+      echo 'export WINEDLLOVERRIDES="mscoree,mshtml="' >> $BASH_ENV
+      echo 'export WINEDEBUG="-all"' >> $BASH_ENV
+
+step-restore-electron-cache: &step-restore-electron-cache
+  restore_cache:
+    name: Restoring Electron cache
+    paths:
+      - $HOME/.cache/electron
+    keys:
+      - v1-electron-cache-{{ arch }}
+
+step-save-electron-cache: &step-save-electron-cache
+  save_cache:
+    name: Persisting Electron cache
+    paths:
+      - $HOME/.cache/electron
+    key: v1-electron-cache-{{ arch }}
+
+step-before-install: &step-before-install
+  run: test/ci/before_install.sh
+
+steps-ci: &steps-ci
+  steps:
+    - checkout
+    - *step-env
+    - *step-before-install
+    - run: |
+        case "$(uname -s)" in
+          "Darwin"|"Linux") npm install --engine-strict --no-lockfile ;;
+          *) npm install --no-lockfile ;;
+        esac
+    - *step-restore-electron-cache
+    - run: test/ci/_before_script.js
+    - *step-save-electron-cache
+    - run: npm run lint
+    - run: npm run tsd
+    - run: npm run coverage
+    - run: npm run codecov
+
+version: 2.1
+orbs:
+  win: circleci/windows@2.4.0
+jobs:
+  test-linux-12:
+    docker:
+      - image: circleci/node:12
+    <<: *steps-ci
+  test-linux-14:
+    docker:
+      - image: circleci/node:14
+    <<: *steps-ci
+  test-mac:
+    macos:
+      xcode: "11.7.0"
+    <<: *steps-ci
+  test-windows:
+    executor:
+      name: win/default
+      shell: bash.exe
+    <<: *steps-ci
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-linux-12:
+          filters:
+            branches: { ignore: gh-pages }
+      - test-linux-14:
+          filters:
+            branches: { ignore: gh-pages }
+      - test-mac:
+          filters:
+            branches: { ignore: gh-pages }
+      - test-windows:
+          filters:
+            branches: { ignore: gh-pages }

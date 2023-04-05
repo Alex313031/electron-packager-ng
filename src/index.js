@@ -12,6 +12,8 @@ const targets = require('./targets')
 const unzip = require('./unzip')
 const { packageUniversalMac } = require('./universal')
 
+require('colors')
+
 function debugHostInfo () {
   debug(common.hostInfo())
 }
@@ -86,7 +88,7 @@ class Packager {
 
   async createApp (comboOpts, zipPath) {
     const buildDir = this.buildDir(comboOpts.platform, comboOpts.arch)
-    common.info(`Packaging app for platform ${comboOpts.platform} ${comboOpts.arch} using electron v${comboOpts.electronVersion}`, this.opts.quiet)
+    common.info(`Packaging app for platform ` + `${comboOpts.platform} ${comboOpts.arch}`.cyan + ` using electron ` + `v${comboOpts.electronVersion}`.cyan, this.opts.quiet)
 
     debug(`Creating ${buildDir}`)
     await fs.ensureDir(buildDir)
@@ -102,7 +104,7 @@ class Packager {
       if (this.opts.overwrite) {
         return this.overwriteAndCreateApp(finalPath, comboOpts, zipPath)
       } else {
-        common.info(`Skipping ${comboOpts.platform} ${comboOpts.arch} (output dir already exists, use --overwrite to force)`, this.opts.quiet)
+        common.info(`Skipping ${comboOpts.platform} ${comboOpts.arch} (output dir already exists, use --overwrite to force)`.yellow, this.opts.quiet)
         return true
       }
     } else {

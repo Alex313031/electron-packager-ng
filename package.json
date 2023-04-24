@@ -35,7 +35,7 @@
     "electron-notarize": "^1.1.1",
     "electron-osx-sign": "^0.6.0",
     "extract-zip": "^2.0.1",
-    "filenamify": "^4.3.0",
+    "filenamify": "^6.0.0",
     "fs-extra": "^10.1.0",
     "galactus": "^0.2.1",
     "get-package-info": "^1.0.0",

@@ -26,7 +26,7 @@
     "usage.txt"
   ],
   "dependencies": {
-    "@electron/get": "^1.12.4",
+    "@electron/get": "^2.0.2",
     "@electron/universal": "^1.2.1",
     "asar": "^3.2.0",
     "colors": "^1.4.0",
